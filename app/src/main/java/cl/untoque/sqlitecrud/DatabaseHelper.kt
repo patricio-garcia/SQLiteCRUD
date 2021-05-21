@@ -66,4 +66,28 @@ class DatabaseHelper(context: Context?): SQLiteOpenHelper(
         db.close()
         return recordList
     }
+
+    fun searchRecords(query: String): ArrayList<ModelRecord> {
+        val recordList = ArrayList<ModelRecord>()
+        val selectQuery = "SELECT * FROM ${Constants.TABLE_NAME} WHERE ${Constants.C_NAME} LIKE '%$query%'"
+        val db = this.writableDatabase
+        val cursor = db.rawQuery(selectQuery, null)
+
+        if (cursor.moveToNext()) {
+            do {
+                val modelRecord = ModelRecord(
+                    ""+cursor.getInt(cursor.getColumnIndex(Constants.C_ID)),
+                    ""+cursor.getString(cursor.getColumnIndex(Constants.C_IMAGE)),
+                    ""+cursor.getString(cursor.getColumnIndex(Constants.C_NAME)),
+                    ""+cursor.getString(cursor.getColumnIndex(Constants.C_AGE)),
+                    ""+cursor.getString(cursor.getColumnIndex(Constants.C_PHONE)),
+                    ""+cursor.getString(cursor.getColumnIndex(Constants.C_ADD_TIMESTAMP)),
+                    ""+cursor.getString(cursor.getColumnIndex(Constants.C_UPDATED_TIMESTAMP)),
+                )
+                recordList.add(modelRecord)
+            } while(cursor.moveToNext())
+        }
+        db.close()
+        return recordList
+    }
 }
